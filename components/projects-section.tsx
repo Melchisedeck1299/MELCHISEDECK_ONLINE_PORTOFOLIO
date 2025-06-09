@@ -16,31 +16,29 @@ export default function ProjectsSection() {
       image: "/placeholder.svg?height=200&width=300",
       technologies: ["Architecture modulaire", "Gestion quotidienne", "Finances", "Planification"],
       liveUrl: "https://github.com/Melchisedeck1299/Alter_Ego",
-      githubUrl: "#",
+      
     },
     {
       title: t("projects.project2.title"),
       description: t("projects.project2.desc"),
       image: "/placeholder.svg?height=200&width=300",
       technologies: ["Deep Learning", "Python", "Reconnaissance 3D", "Classification"],
-      liveUrl: "https://colab.research.google.com/drive/1Ji5lm2rf5tioc_Dz6xYOrCbtIM-3u-cn?usp=sharing",
-      githubUrl: "https://github.com/Melchisedeck1299/3D_Object_detection",
+      liveUrl: "https://github.com/Melchisedeck1299/3D_Object_detection",
     },
     {
       title: t("projects.project4.title"),
       description: t("projects.project4.desc"),
       image: "/placeholder.svg?height=200&width=300",
       technologies: ["Java", "Simulation réseau", "Protocoles", "Connexions"],
-      liveUrl: "#",
-      githubUrl: "#",
+      liveUrl: "https://github.com/Melchisedeck1299/TP3_reseau",
     },
     {
       title: t("projects.project5.title"),
       description: t("projects.project5.desc"),
       image: "/placeholder.svg?height=200&width=300",
       technologies: ["Data Science", "Analyse tendances", "Support technique", "Optimisation"],
-      liveUrl: "#",
-      githubUrl: "#",
+      liveUrl: "https://colab.research.google.com/drive/1Ji5lm2rf5tioc_Dz6xYOrCbtIM-3u-cn?usp=sharing",
+      
     },
   ]
 
