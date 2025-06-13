@@ -34,7 +34,7 @@ export default function HeroSection() {
             </Button>
             <Button variant="outline" size="lg" asChild>
               <a
-                href="https://drive.google.com/uc?export=download&id=1qXk9Ds-Zeo992nGgaS1wV5Z-g9yMeKzt"
+                href="https://drive.google.com/uc?export=download&id=1oRkXFZxAyDdzb0doFROT2729Y0ZQCCc7"
                 target="_blank"
                 rel="noopener noreferrer"
               >
