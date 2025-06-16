@@ -1,13 +1,11 @@
 "use client"
 
 import type React from "react"
-
-import { useState } from "react"
+import { useState, useEffect, useRef } from "react"
 import { MessageCircle, X, Send, Bot, User } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { ScrollArea } from "@/components/ui/scroll-area"
 import { useLanguage } from "@/lib/language-context"
 
 interface Message {
@@ -29,56 +27,33 @@ export default function Chatbox() {
     },
   ])
   const [inputValue, setInputValue] = useState("")
+  const messagesEndRef = useRef<HTMLDivElement>(null)
 
-  const predefinedResponses: Record<string, string> = {
-    expérience:
-      "J'ai plus de 2 ans d'expérience dans le service client et la gestion de bases de données, avec des postes chez Axxess International Inc. et Go Depo.",
-    experience:
-      "I have over 2 years of experience in customer service and database management, with positions at Axxess International Inc. and Go Depo.",
-    compétences:
-      "Mes principales compétences incluent Python, Java, SQL, MongoDB, MySQL, et les outils Microsoft 365. Je maîtrise aussi NumPy, Pandas et Git.",
-    skills:
-      "My main skills include Python, Java, SQL, MongoDB, MySQL, and Microsoft 365 tools. I also master NumPy, Pandas and Git.",
-    formation:
-      "Je suis actuellement étudiant en Baccalauréat en Informatique (Data Science) à l'UQTR et diplômé en Business Management de Strathmore University au Kenya.",
-    education:
-      "I am currently a Computer Science (Data Science) student at UQTR and graduated in Business Management from Strathmore University in Kenya.",
-    projets:
-      "J'ai réalisé plusieurs projets incluant l'application Alter Ego, la détection d'objets 3D avec deep learning, et l'automatisation du recensement d'emplois en France.",
-    projects:
-      "I have completed several projects including the Alter Ego application, 3D object detection with deep learning, and automation of job listings in France.",
-    contact: "Vous pouvez me contacter à mvitamelchisedeck@gmail.com ou au +1 (819) 979 5455.",
-    douane:
-      "J'ai une expérience significative en tant que commis à la douane, traitant les documents d'import/export et assurant la conformité réglementaire.",
-    customs:
-      "I have significant experience as a customs clerk, processing import/export documents and ensuring regulatory compliance.",
-    "data science":
-      "Je suis spécialisé en Data Science avec des compétences en Python, NumPy, Pandas, et MongoDB. Je travaille actuellement sur ma certification Google Data Analytics.",
-    stage:
-      "J'ai effectué un stage en support informatique chez Axxess International Inc. où j'ai fourni un support technique niveau 1-2.",
-    internship:
-      "I completed an IT support internship at Axxess International Inc. where I provided level 1-2 technical support.",
-    disponibilité:
-      "Je suis actuellement étudiant et ouvert aux opportunités de stage et d'emploi dans le domaine de la data science et du développement.",
-    availability:
-      "I am currently a student and open to internship and job opportunities in data science and development.",
-  }
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
+  }, [messages])
 
-  const getBotResponse = (userMessage: string): string => {
-    const lowerMessage = userMessage.toLowerCase()
+  const getBotResponse = async (userMessage: string): Promise<string> => {
+    console.log("Envoi à l'API OpenAI :", userMessage)
+    try {
+      const res = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: userMessage }),
+      })
 
-    for (const [key, response] of Object.entries(predefinedResponses)) {
-      if (lowerMessage.includes(key)) {
-        return response
-      }
+      const data = await res.json()
+      console.log("Réponse de l'API :", data)
+      return data.reply
+    } catch (err) {
+      console.error("Erreur de requête API :", err)
+      return t("language") === "fr"
+        ? "Une erreur est survenue. Veuillez réessayer plus tard."
+        : "An error occurred. Please try again later."
     }
-
-    return t("language") === "fr"
-      ? "Merci pour votre question ! Pour des informations plus détaillées, n'hésitez pas à me contacter directement."
-      : "Thank you for your question! For more detailed information, feel free to contact me directly."
   }
 
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     if (!inputValue.trim()) return
 
     const userMessage: Message = {
@@ -89,19 +64,18 @@ export default function Chatbox() {
     }
 
     setMessages((prev) => [...prev, userMessage])
-
-    // Simulate bot response delay
-    setTimeout(() => {
-      const botResponse: Message = {
-        id: messages.length + 2,
-        text: getBotResponse(inputValue),
-        isBot: true,
-        timestamp: new Date(),
-      }
-      setMessages((prev) => [...prev, botResponse])
-    }, 1000)
-
     setInputValue("")
+
+    const responseText = await getBotResponse(inputValue)
+
+    const botResponse: Message = {
+      id: messages.length + 2,
+      text: responseText,
+      isBot: true,
+      timestamp: new Date(),
+    }
+
+    setMessages((prev) => [...prev, botResponse])
   }
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -131,30 +105,34 @@ export default function Chatbox() {
             </CardTitle>
           </CardHeader>
 
-          <CardContent className="flex-1 flex flex-col p-0">
-            <ScrollArea className="flex-1 px-4">
-              <div className="space-y-4 pb-4">
-                {messages.map((message) => (
-                  <div key={message.id} className={`flex ${message.isBot ? "justify-start" : "justify-end"}`}>
-                    <div
-                      className={`max-w-[80%] p-3 rounded-lg ${
-                        message.isBot ? "bg-gray-100 text-gray-900" : "bg-blue-600 text-white"
-                      }`}
-                    >
-                      <div className="flex items-start space-x-2">
-                        {message.isBot ? (
-                          <Bot className="h-4 w-4 mt-0.5 text-blue-600" />
-                        ) : (
-                          <User className="h-4 w-4 mt-0.5" />
-                        )}
-                        <p className="text-sm">{message.text}</p>
-                      </div>
+          <CardContent className="flex-1 flex flex-col p-0 overflow-hidden">
+            {/* Zone des messages avec scroll */}
+            <div className="flex-1 overflow-y-auto px-4 space-y-4 pb-4">
+              {messages.map((message) => (
+                <div
+                  key={message.id}
+                  className={`flex ${message.isBot ? "justify-start" : "justify-end"}`}
+                >
+                  <div
+                    className={`max-w-[80%] p-3 rounded-lg ${
+                      message.isBot ? "bg-gray-100 text-gray-900" : "bg-blue-600 text-white"
+                    }`}
+                  >
+                    <div className="flex items-start space-x-2">
+                      {message.isBot ? (
+                        <Bot className="h-4 w-4 mt-0.5 text-blue-600" />
+                      ) : (
+                        <User className="h-4 w-4 mt-0.5" />
+                      )}
+                      <p className="text-sm">{message.text}</p>
                     </div>
                   </div>
-                ))}
-              </div>
-            </ScrollArea>
+                </div>
+              ))}
+              <div ref={messagesEndRef} />
+            </div>
 
+            {/* Champ de saisie + bouton */}
             <div className="p-4 border-t">
               <div className="flex space-x-2">
                 <Input
