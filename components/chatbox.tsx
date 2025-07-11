@@ -36,7 +36,7 @@ export default function Chatbox() {
   const getBotResponse = async (userMessage: string): Promise<string> => {
     console.log("Envoi à l'API OpenAI :", userMessage)
     try {
-      const res = await fetch("/api/chat", {
+      const res = await fetch("/api/chat-rag", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message: userMessage }),
