@@ -98,6 +98,10 @@ const translations = {
     "projects.project5.title": "Analyse données système tickets",
     "projects.project5.desc":
       "Extraction et analyse des données pour identifier les tendances et optimiser le support technique via des outils de data science.",
+    "projects.project6.title": "Application 'habitFlow'",
+    "projects.project6.desc":
+      "Application mobile de suivi d’habitudes intelligente et collaborative, permettant aux utilisateurs de suivre leurs habitudes, recevoir des suggestions personnalisées, visualiser leur progression, relever des défis sociaux, et synchroniser leurs données entre plusieurs appareils.",
+
     "projects.view": "Voir le projet",
 
     // Strengths
@@ -236,6 +240,10 @@ const translations = {
     "projects.project5.title": "Ticket System Data Analysis",
     "projects.project5.desc":
       "Data extraction and analysis to identify trends and optimize technical support using data science tools.",
+    "projects.project6.title": "'habitFlow' App",
+    "projects.project6.desc":
+      "Smart, collaborative habit-tracking mobile app enabling users to track habits, receive personalized suggestions, visualize progress, take on social challenges, and sync data across devices.",
+
     "projects.view": "View project",
 
     // Strengths

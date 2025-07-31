@@ -40,6 +40,13 @@ export default function ProjectsSection() {
       liveUrl: "https://colab.research.google.com/drive/1Ji5lm2rf5tioc_Dz6xYOrCbtIM-3u-cn?usp=sharing",
       
     },
+    {
+      title: t("projects.project6.title"),
+      description: t("projects.project6.desc"),
+      image: "/placeholder.svg?height=200&width=300",
+      technologies: ["Suivi d'habitudes", "Collaboration", "Défis sociaux", "Synchronisation"],
+      liveUrl: "https://github.com/Melchisedeck1299/habitflow",
+    }
   ]
 
   return (
