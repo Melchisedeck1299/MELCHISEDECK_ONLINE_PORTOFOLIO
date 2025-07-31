@@ -27,14 +27,66 @@ export default function Chatbox() {
     },
   ])
   const [inputValue, setInputValue] = useState("")
+  const [isLoading, setIsLoading] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
   }, [messages])
 
+  // Réponses prédéfinies pour le fallback
+  const predefinedResponses: Record<string, string> = {
+    expérience:
+      "J'ai plus de 2 ans d'expérience dans le service client et la gestion de bases de données, avec des postes chez Axxess International Inc. et Go Depo.",
+    experience:
+      "I have over 2 years of experience in customer service and database management, with positions at Axxess International Inc. and Go Depo.",
+    compétences:
+      "Mes principales compétences incluent Python, Java, SQL, MongoDB, MySQL, et les outils Microsoft 365. Je maîtrise aussi NumPy, Pandas et Git.",
+    skills:
+      "My main skills include Python, Java, SQL, MongoDB, MySQL, and Microsoft 365 tools. I also master NumPy, Pandas and Git.",
+    formation:
+      "Je suis actuellement étudiant en Baccalauréat en Informatique (Data Science) à l'UQTR et diplômé en Business Management de Strathmore University au Kenya.",
+    education:
+      "I am currently a Computer Science (Data Science) student at UQTR and graduated in Business Management from Strathmore University in Kenya.",
+    projets:
+      "J'ai réalisé plusieurs projets incluant l'application Alter Ego, la détection d'objets 3D avec deep learning, et la simulation réseau en Java.",
+    projects:
+      "I have completed several projects including the Alter Ego application, 3D object detection with deep learning, and Java network simulation.",
+    contact: "Vous pouvez me contacter à mvitamelchisedeck@gmail.com ou au +1 (819) 979 5455.",
+    douane:
+      "J'ai une expérience significative en tant que commis à la douane, traitant les documents d'import/export et assurant la conformité réglementaire.",
+    customs:
+      "I have significant experience as a customs clerk, processing import/export documents and ensuring regulatory compliance.",
+    "data science":
+      "Je suis spécialisé en Data Science avec des compétences en Python, NumPy, Pandas, et MongoDB. Je travaille actuellement sur ma certification Google Data Analytics.",
+    stage:
+      "J'ai effectué un stage en support informatique chez Axxess International Inc. où j'ai fourni un support technique niveau 1-2.",
+    internship:
+      "I completed an IT support internship at Axxess International Inc. where I provided level 1-2 technical support.",
+    disponibilité:
+      "Je suis actuellement étudiant et ouvert aux opportunités de stage et d'emploi dans le domaine de la data science et du développement.",
+    availability:
+      "I am currently a student and open to internship and job opportunities in data science and development.",
+  }
+
+  const getPredefinedResponse = (userMessage: string): string => {
+    const lowerMessage = userMessage.toLowerCase()
+
+    for (const [key, response] of Object.entries(predefinedResponses)) {
+      if (lowerMessage.includes(key)) {
+        return response
+      }
+    }
+
+    return t("language") === "fr"
+      ? "Merci pour votre question ! Pour des informations plus détaillées, n'hésitez pas à me contacter directement."
+      : "Thank you for your question! For more detailed information, feel free to contact me directly."
+  }
+
   const getBotResponse = async (userMessage: string): Promise<string> => {
-    console.log("Envoi à l'API OpenAI :", userMessage)
+    console.log("Envoi à l'API :", userMessage)
+
+    // Essayer d'abord l'API RAG
     try {
       const res = await fetch("/api/chat-rag", {
         method: "POST",
@@ -42,19 +94,26 @@ export default function Chatbox() {
         body: JSON.stringify({ message: userMessage }),
       })
 
-      const data = await res.json()
-      console.log("Réponse de l'API :", data)
-      return data.reply
+      if (res.ok) {
+        const contentType = res.headers.get("content-type")
+        if (contentType && contentType.includes("application/json")) {
+          const data = await res.json()
+          if (data.reply) {
+            console.log("Réponse RAG reçue :", data.reply)
+            return data.reply
+          }
+        }
+      }
     } catch (err) {
-      console.error("Erreur de requête API :", err)
-      return t("language") === "fr"
-        ? "Une erreur est survenue. Veuillez réessayer plus tard."
-        : "An error occurred. Please try again later."
+      console.log("API RAG non disponible, utilisation du fallback")
     }
+
+    // Fallback vers les réponses prédéfinies
+    return getPredefinedResponse(userMessage)
   }
 
   const handleSendMessage = async () => {
-    if (!inputValue.trim()) return
+    if (!inputValue.trim() || isLoading) return
 
     const userMessage: Message = {
       id: messages.length + 1,
@@ -64,22 +123,36 @@ export default function Chatbox() {
     }
 
     setMessages((prev) => [...prev, userMessage])
+    const currentInput = inputValue
     setInputValue("")
+    setIsLoading(true)
 
-    const responseText = await getBotResponse(inputValue)
-
-    const botResponse: Message = {
+    // Ajouter un message de chargement
+    const loadingMessage: Message = {
       id: messages.length + 2,
-      text: responseText,
+      text: t("language") === "fr" ? "Je réfléchis..." : "Thinking...",
       isBot: true,
       timestamp: new Date(),
     }
+    setMessages((prev) => [...prev, loadingMessage])
 
-    setMessages((prev) => [...prev, botResponse])
+    const responseText = await getBotResponse(currentInput)
+
+    // Remplacer le message de chargement par la vraie réponse
+    setMessages((prev) => {
+      const newMessages = [...prev]
+      newMessages[newMessages.length - 1] = {
+        ...loadingMessage,
+        text: responseText,
+      }
+      return newMessages
+    })
+
+    setIsLoading(false)
   }
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter") {
+    if (e.key === "Enter" && !isLoading) {
       handleSendMessage()
     }
   }
@@ -109,10 +182,7 @@ export default function Chatbox() {
             {/* Zone des messages avec scroll */}
             <div className="flex-1 overflow-y-auto px-4 space-y-4 pb-4">
               {messages.map((message) => (
-                <div
-                  key={message.id}
-                  className={`flex ${message.isBot ? "justify-start" : "justify-end"}`}
-                >
+                <div key={message.id} className={`flex ${message.isBot ? "justify-start" : "justify-end"}`}>
                   <div
                     className={`max-w-[80%] p-3 rounded-lg ${
                       message.isBot ? "bg-gray-100 text-gray-900" : "bg-blue-600 text-white"
@@ -141,8 +211,9 @@ export default function Chatbox() {
                   onKeyPress={handleKeyPress}
                   placeholder={t("chat.placeholder")}
                   className="flex-1"
+                  disabled={isLoading}
                 />
-                <Button onClick={handleSendMessage} size="sm">
+                <Button onClick={handleSendMessage} size="sm" disabled={isLoading || !inputValue.trim()}>
                   <Send className="h-4 w-4" />
                 </Button>
               </div>

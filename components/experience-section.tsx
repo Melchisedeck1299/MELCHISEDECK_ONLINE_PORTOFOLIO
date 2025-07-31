@@ -10,6 +10,13 @@ export default function ExperienceSection() {
 
   const experiences = [
     {
+      title: t("experience.job0.title"),
+      company: t("experience.job0.company"),
+      period: t("experience.job0.period"),
+      description: t("experience.job0.desc"),
+      technologies: ["VS Code", "React", "JavaScript", "TypeScript", "HTML/CSS", "v0"],
+    },
+    {
       title: t("experience.job1.title"),
       company: t("experience.job1.company"),
       period: t("experience.job1.period"),

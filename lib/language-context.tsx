@@ -33,6 +33,11 @@ const translations = {
 
     // Experience
     "experience.title": "Expérience Professionnelle",
+    "experience.job0.title": "Stage en développement Web",
+    "experience.job0.company": "Loriginal.org",
+    "experience.job0.period": "Août 2025 - Présent",
+    "experience.job0.desc":
+      "Réalisation du contrôle qualité (QA) et intégration de contenus générés automatiquement (blogs et produits associés) dans une application web développée avec React.",
     "experience.job1.title": "Commis à la douane",
     "experience.job1.company": "Axxess International Inc.",
     "experience.job1.period": "Août 2024 - Présent",
@@ -167,6 +172,11 @@ const translations = {
 
     // Experience
     "experience.title": "Professional Experience",
+    "experience.job0.title": "Web Development Intern",
+    "experience.job0.company": "Loriginal.org",
+    "experience.job0.period": "August 2025 - Present",
+    "experience.job0.desc":
+      "Quality assurance (QA) and integration of automatically generated content (blogs and associated products) in a web application developed with React.",
     "experience.job1.title": "Customs Clerk",
     "experience.job1.company": "Axxess International Inc.",
     "experience.job1.period": "August 2024 - Present",
