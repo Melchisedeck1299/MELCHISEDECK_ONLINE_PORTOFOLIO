@@ -88,6 +88,9 @@ Git, GitHub, GitLab, Vercel, Netlify, npm, Node.js
 - **Analyse de tickets de support (stage)**  
   Extraction, visualisation et interprétation de données pour détecter des tendances d'incidents techniques.
 
+- **habitFlow**
+  Application mobile de suivi d’habitudes intelligente et collaborative, permettant aux utilisateurs de suivre leurs habitudes, recevoir des suggestions personnalisées, visualiser leur progression, relever des défis sociaux, et synchroniser leurs données entre plusieurs appareils.
+
 📌 *Certains projets ne sont pas disponibles publiquement en raison de la confidentialité des données.*
 
 ---
